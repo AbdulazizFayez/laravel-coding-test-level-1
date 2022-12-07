@@ -1,24 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Event;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Event;
 
-class EventController extends Controller
-{
+class EventApiController extends Controller
+{    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {        
         $getEvents = Event::all();
-
-        return view('events.index', ['events' => $getEvents]);
+        return $getEvents;
     }
-    
+
+    public function getActiveEvents()
+    {
+        $getEvents = Event::where('startAt', '>=', 'now()')
+        ->where('endsAt', '<=', 'now()')
+        ->get();
+        return $getEvents;
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -27,7 +34,7 @@ class EventController extends Controller
      */
     public function create()
     {
-        return view('events.create');
+        
     }
 
     /**
@@ -45,9 +52,18 @@ class EventController extends Controller
             'endsAt' => 'required',
         ]);
         
-       Event::create($request->all());
-       
-       return redirect('events')->with('message', 'Event is created Successfully!');
+        $newEvent = Event::create($request->all());
+
+        if ($newEvent) {
+            return response()->json([                
+                'message' => 'Success',
+                'eventData' => $newEvent,                
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'Failed',
+            ], 400);
+        }
     }
 
     /**
@@ -58,21 +74,19 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $getEvent = Event::find($id);
-        return view('events.show', ['event' => $getEvent]);
+        $getEvents = Event::find($id);
+        return $getEvents;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Event  $event
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Event $event)
     {
-        $getEvent = Event::find($id);
-
-        return view('events.edit', ['event' => $getEvent]);
+        //
     }
 
     /**
@@ -84,17 +98,17 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required',
-            'slug' => 'required',
-            'startAt' => 'required',
-            'endsAt' => 'required',
-        ]);
+        $updateEvent = Event::where('id', $id)->update($request->all());
 
-        $updateEvent = Event::find($id)->update($request->all());
-
-        return redirect('events')->with('message', 'Event is Updated Successfully!');
-
+        if ($updateEvent) {
+            return response()->json([
+                'message' => 'Success',
+            ], 201);
+        } else {
+            return response()->json([
+                'message' => 'Failed',
+            ], 400);
+        }
     }
 
     /**

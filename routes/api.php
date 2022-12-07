@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controller\EventController;
+use App\Http\Controllers\API\EventApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('/vi/event', EventController::class);
-Route::get('/vi/event/active-events', [EventController::class, 'getActiveEvents']);
+Route::apiResource('/v1/event', EventApiController::class);
+Route::get('/v1/event/active-events', [EventApiController::class, 'getActiveEvents']);

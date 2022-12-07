@@ -16,11 +16,12 @@ class EventSeeder extends Seeder
      */
     public function run()
     {
-        $fake = Faker::create();
+        $faker = Faker::create();
         $insertions = 5;
-        
-        foreach ($insertions as $insert) {            
+
+        for ($i=0; $i < $insertions; $i++) {             
             DB::table('events')->insert([
+                'id' => Str::uuid(36),
                 'name' => $faker->name,
                 'slug' => $faker->unique()->name,
                 'startAt' => $faker->dateTime(),
