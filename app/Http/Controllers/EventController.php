@@ -38,6 +38,10 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
+        auth::check(){
+            return redirect('events')->with('message', 'Please login to create new Event');
+        }
+
         $request->validate([
             'name' => 'required',
             'slug' => 'required|unique:events',
@@ -46,7 +50,11 @@ class EventController extends Controller
         ]);
         
        Event::create($request->all());
-       
+
+        $eventDate = Event::find($request->id);
+
+       $result = \Mail::to('abdulaziz_10101@yahoo.com')->send(new \App\Mail\EventCreated($eventDate));       
+
        return redirect('events')->with('message', 'Event is created Successfully!');
     }
 
@@ -70,6 +78,9 @@ class EventController extends Controller
      */
     public function edit($id)
     {
+         auth::check(){
+            return redirect('events')->with('message', 'Please login to Edit Event');
+        }
         $getEvent = Event::find($id);
 
         return view('events.edit', ['event' => $getEvent]);
@@ -84,6 +95,10 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
+         auth::check(){
+            return redirect('events')->with('message', 'Please login to update Event');
+        }
+
         $request->validate([
             'name' => 'required',
             'slug' => 'required',

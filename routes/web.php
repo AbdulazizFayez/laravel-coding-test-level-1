@@ -28,3 +28,6 @@ Route::post('event_update/{id}', [EventController::class, 'update']);
 Route::get('events/{id}/edit', [EventController::class, 'edit']);
 Route::get('events/create', [EventController::class, 'create']);
 Route::get('events/{id}', [EventController::class, 'show']);
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
